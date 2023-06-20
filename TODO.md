@@ -1,0 +1,5 @@
+- Make the questionnaire type mandatory
+- Order of questions is not consistent
+- We need to have ability to replace keys (@patient, @healthfacility, ...)
+- mediation to be connected to icd10 code
+- the quantity of medication to be assicated with schedule, not order.

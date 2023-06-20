@@ -1,0 +1,296 @@
+[
+  {
+    "name": "employees",
+    "baseModel": "HealthcareFacility",
+    "findMany": false,
+    "selectInput": {
+      "select": {
+        "healthcareFacilityId": true,
+        "name": true,
+        "phone": true,
+        "email": true,
+        "fax": true,
+        "address": true,
+        "city": true,
+        "postalCode": true,
+        "state": true,
+        "settings": true,
+        "isDeleted": true,
+        "dateCreated": true,
+        "dateUpdated": true,
+        "healthcareFacilityToEmployee": {
+          "select": {
+            "employee": {
+              "select": {
+                "employeeId": true,
+                "employeeNo": true,
+                "specialtyId": true,
+                "userId": true,
+                "isDeleted": true,
+                "dateCreated": true,
+                "dateUpdated": true,
+                "user": {
+                  "select": {
+                    "firstName": true,
+                    "middleName": true,
+                    "lastName": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "allergies",
+    "baseModel": "Patient",
+    "findMany": false,
+    "selectInput": {
+      "select": {
+        "patientId": true,
+        "allergyToPatients": {
+          "select": {
+            "allergy": { "select": { "allergyId": true, "name": true } }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "all-caregivers",
+    "baseModel": "RMSAdmissionCaregiver",
+    "findMany": true,
+    "selectInput": {
+      "select": {
+        "rmsAdmissionCaregiverId": true,
+        "rmsAdmissionId": true,
+        "caregiverId": true,
+        "caregiver": {
+          "select": {
+            "username": true,
+            "firstName": true,
+            "lastName": true,
+            "middleName": true
+          }
+        },
+        "isPrimary": true,
+        "dateStarted": true,
+        "dateStopped": true,
+        "isDeleted": true
+      }
+    }
+  },
+  {
+    "name": "observations",
+    "baseModel": "OrderableValue",
+    "findMany": true,
+    "sortBy": {
+      "columnName": "acquisitionTime",
+      "sortOrder": "desc"
+    },
+    "selectInput": {
+      "select": {
+        "patient": {
+          "select": {
+            "age": true,
+            "user": {
+              "select": { "firstName": true, "lastName": true, "image": true }
+            }
+          }
+        },
+        "orderableValueId": true,
+        "orderable": {
+          "select": { "name": true, "orderableId": true, "icon": true }
+        },
+        "patientId": true,
+        "observationTime": true,
+        "acquisitionTime": true,
+        "captureTime": true,
+        "readingTime": true,
+        "status": true,
+        "isValid": true,
+        "resultableValues": {
+          "select": {
+            "resultableValueId": true,
+            "textValue": true,
+            "numericValue": true,
+            "dataValue": true,
+            "fileUrls": true,
+            "status": true,
+
+            "resultable": {
+              "select": {
+                "key": true,
+                "resultUnit": true,
+                "resultableId": true,
+                "dataType": true,
+                "name": true
+              }
+            }
+          }
+        },
+        "rmsScheduleInstance": { "select": { "dueTime": true } }
+      }
+    },
+    "where": [
+      { "orderableValueId": { "contains": true } },
+      { "orderableId": { "contains": true } },
+      { "patientId": { "contains": true } },
+      { "orderable": { "name": { "contains": true } } },
+      { "patient": { "hospitalNo": { "contains": true } } },
+      { "patient": { "user": { "username": { "contains": true } } } },
+      { "patient": { "user": { "firstName": { "contains": true } } } },
+      { "patient": { "user": { "email": { "contains": true } } } },
+      { "patient": { "user": { "mobile": { "contains": true } } } }
+    ]
+  },
+  {
+    "name": "observations",
+    "baseModel": "OrderableValue",
+    "findMany": false,
+    "selectInput": {
+      "select": {
+        "patient": {
+          "select": {
+            "age": true,
+            "user": {
+              "select": { "firstName": true, "lastName": true, "image": true }
+            }
+          }
+        },
+        "orderableValueId": true,
+        "orderable": {
+          "select": { "name": true, "orderableId": true, "icon": true }
+        },
+        "patientId": true,
+        "observationTime": true,
+        "acquisitionTime": true,
+        "captureTime": true,
+        "readingTime": true,
+        "status": true,
+        "isValid": true,
+        "resultableValues": {
+          "select": {
+            "resultableValueId": true,
+            "textValue": true,
+            "numericValue": true,
+            "dataValue": true,
+            "fileUrls": true,
+            "status": true,
+
+            "resultable": {
+              "select": {
+                "key": true,
+                "resultUnit": true,
+                "resultableId": true,
+                "dataType": true,
+                "name": true
+              }
+            }
+          }
+        },
+        "rmsScheduleInstance": { "select": { "dueTime": true } }
+      }
+    }
+  },
+  {
+    "name": "compact-view-ding",
+    "baseModel": "Orderable",
+    "findMany": true,
+    "selectInput": {
+      "select": {
+        "orderableId": true,
+        "name": true,
+        "orderableToResultable": {
+          "select": {
+            "resultable": {
+              "select": {
+                "name": true,
+                "resultableId": true,
+                "normalLow": true,
+                "normalHigh": true
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "resultables",
+    "baseModel": "Orderable",
+    "findMany": false,
+    "selectInput": {
+      "select": {
+        "name": true,
+        "orderableToResultable": {
+          "select": {
+            "resultable": {
+              "select": {
+                "minErrorValue": true,
+                "maxErrorValue": true,
+                "warnLow": true,
+                "warnHigh": true,
+                "normalLow": true,
+                "normalHigh": true,
+                "resultableId": true,
+                "name": true,
+                "dataType": true
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "detail",
+    "baseModel": "RMSOrder",
+    "findMany": true,
+    "selectInput": {
+      "select": {
+        "rmsOrderId": true,
+        "deviceInventoryId": true,
+        "alertGap": true,
+        "graceTime": true,
+        "isDeleted": true,
+        "dateCreated": true,
+        "dateUpdated": true,
+        "orderable": {
+          "select": {
+            "orderableId": true,
+            "name": true,
+            "icon": true
+          }
+        },
+        "orderBy": {
+          "select": {
+            "employeeId": true,
+            "user": {
+              "select": {
+                "firstName": true
+              }
+            }
+          }
+        },
+        "rmsAdmission": {
+          "select": {
+            "rmsAdmissionId": true,
+            "patient": {
+              "select": {
+                "patientId": true,
+                "user": {
+                  "select": {
+                    "firstName": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+]

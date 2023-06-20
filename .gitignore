@@ -1,0 +1,57 @@
+migrations_saved/
+
+# compiled output
+__pycache__/
+*.pyc
+GENERATED_CODE/
+/dist
+/node_modules
+
+dbml/
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS
+.DS_Store
+
+# Tests
+/coverage*/
+/.nyc_output
+
+# prisma
+# /.env
+# prisma/migrations
+# .env.test
+# env.conf
+/database
+/uploads
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Data
+/data*
+# **/modules
+modules-generated
+modules-generated-new
+*.testing.ts
+src/workflows

@@ -1,0 +1,265 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["filteredRelationCount"]
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+// generator erd {
+//     provider                  = "prisma-erd-generator"
+//     output                    = "debug/ERD.svg"
+//     erdDebug                  = true
+//     tableOnly                 = false
+//     includeRelationFromFields = false
+//     theme                     = "default"
+// }
+
+// // Viewer at: https://dbdiagram.io/home
+// generator dbml {
+//     provider = "prisma-dbml-generator"
+// }
+
+enum Gender {
+    MALE
+    FEMALE
+    OTHER
+}
+
+enum EmployeeType {
+    CHI_US
+    CHI_PAK
+    PRACTICE_EMPLOYEE
+}
+
+///{"modulePath": "src/modules/users"}
+model User {
+    userId     String  @id @db.Char(40) /// {"size": 40, "dropdown": true}
+    username   String  @unique /// {"dropdown": true}
+    password   String
+    firstName  String
+    image      String? @db.VarChar(300)
+    title      String?
+    middleName String?
+    lastName   String?
+    fullName   String
+    // roleType   RoleType?
+    gender     Gender?
+    birthDate  BigInt?
+
+    email  String? @unique @db.VarChar(100) /// {"dropdown": true}
+    mobile String  @unique
+    phone  String?
+
+    nic      String? @unique
+    address1 String?
+    address2 String?
+    zipCode  String?
+
+    isActivated            Boolean @default(false)
+    emailVerified          Boolean @default(false)
+    phoneVerified          Boolean @default(false)
+    useTwoFactor           Boolean @default(false)
+    otpSecret              String? @db.VarChar(40)
+    emergencyContactPerson String?
+    emergencyContactPhone  String?
+
+    userInt    Int?
+    userDate   BigInt?
+    userString String? @db.Char(255)
+    userFloat  Float?
+
+    isDeleted   Boolean @default(false)
+    dateCreated BigInt
+    dateUpdated BigInt
+
+    userSessions UserSession[]
+
+    roles       UserRole[]
+    //one of the following should be non-null
+    employee    Employee?
+    userSetting UserSetting?
+    userCodes   UserCode[]
+}
+
+///{"modulePath": "src/modules/users"}
+model UserSession {
+    sessionId   String @id @db.Char(40) /// {"size": 40}
+    sessionData String @db.Text()
+
+    device      String
+    deviceName  String?
+    deviceModel String?
+    osName      String?
+    osVersion   String?
+
+    userId String @db.Char(40) /// {"size": 40}
+    user   User   @relation(fields: [userId], references: [userId])
+}
+
+///{"modulePath": "src/modules/users"}
+model UserCode {
+    userCodeId String @id @db.Char(40) /// {"size": 40}
+
+    codeType     CodeType
+    code         String   @db.Char(8) /// {"size": 8}
+    expiresAt    BigInt
+    appSignature String?  @db.Char(32) /// {"size": 32}
+
+    userId String @db.Char(40)
+    user   User   @relation(fields: [userId], references: [userId])
+
+    isDeleted   Boolean @default(false)
+    dateCreated BigInt
+    dateUpdated BigInt
+}
+
+enum RepeatTimeUnit {
+    DAY
+    WEEK
+    MONTH
+}
+
+enum CodeType {
+    ACCOUNT_VERIFICATION
+    VERIFY_PHONE
+    FORGOT_PASSWORD
+    TWO_FACTOR_LOGIN
+}
+
+enum ActivationStatus {
+    REFERRED
+    ASSIGNED
+    ACTIVE
+    INACTIVE
+}
+
+///{"modulePath": "src/modules"}
+model Setting {
+    settingId   String @id @db.Char(40)
+    settingName String @unique @db.VarChar(100)
+    settingJson String @db.Text
+}
+
+model UserSetting {
+    userSettingId   String  @id @db.Char(40)
+    notify          Boolean @default(true)
+    language        String?
+    userId          String  @unique
+    user            User    @relation(fields: [userId], references: [userId])
+    userSettingJson String  @db.Text
+}
+
+///{"modulePath": "src/modules/users"}
+model UserRole {
+    userRoleId String @id @db.Char(40) /// {"size": 40}
+    user       User   @relation(fields: [userId], references: [userId])
+    userId     String @db.Char(40)
+
+    role String @db.VarChar(50)
+}
+
+///{"modulePath": "src/modules/users"}
+model Employee {
+    employeeId String  @id @db.Char(40) /// {"size": 40}
+    employeeNo String? @unique @db.Char(20) /// {"size": 20}
+
+    employeeType EmployeeType @default(PRACTICE_EMPLOYEE)
+
+    ///{"includeInCreate":true, "required": false}
+    user   User   @relation(fields: [userId], references: [userId])
+    userId String @unique @db.Char(40) /// {"size": 40}
+
+    manager   Employee?  @relation("Workers", fields: [managerId], references: [employeeId])
+    managerId String?    @db.Char(40)
+    workers   Employee[] @relation("Workers")
+
+    isDeleted   Boolean   @default(false)
+    dateCreated BigInt
+    dateUpdated BigInt
+    Company     Company[]
+
+    task       Task[]
+    Attendance Attendance[]
+}
+
+///{"modulePath": "src/modules/users"}
+model Company {
+    companyId String @id @db.Char(40)
+
+    name  String
+    phone String
+    email String?
+    fax   String?
+
+    address    String
+    city       String
+    postalCode String?
+    state      String?
+
+    settings String @db.Text
+
+    poc   Employee @relation(fields: [pocId], references: [employeeId])
+    pocId String   @db.Char(40)
+
+    isDeleted   Boolean @default(false)
+    dateCreated BigInt
+    dateUpdated BigInt
+}
+
+enum TaskStatus {
+    WAITING
+    ACTIVE
+    COMPLETED
+}
+
+model Task {
+    taskId          String       @id @db.Char(40)
+    taskName        String
+    taskDescription String
+    taskLead        Employee?    @relation(fields: [taskLeadId], references: [employeeId])
+    taskLeadId      String?      @db.Char(40)
+    taskStatus      TaskStatus
+    parentTask      Task?        @relation("ParentTask", fields: [parentTaskId], references: [taskId])
+    parentTaskId    String?      @db.Char(40)
+    tasks           Task[]       @relation("ParentTask")
+    Attendance      Attendance[]
+}
+
+model RecordType {
+    breakTypeId      String       @id @db.Char(40)
+    breakName        String
+    breakDescription String       @db.Text
+    Attendance       Attendance[]
+}
+
+model Attendance {
+    attendanceId String     @id @db.Char(40)
+    employee     Employee   @relation(fields: [employeeId], references: [employeeId])
+    employeeId   String     @db.Char(40)
+    checkin      BigInt
+    checkout     BigInt
+    recordType   RecordType @relation(fields: [recordTypeId], references: [breakTypeId])
+    recordTypeId String     @db.Char(40)
+    task         Task?      @relation(fields: [taskId], references: [taskId])
+    taskId       String?    @db.Char(40)
+}
+
+// Break Table:
+// 	Break_Type_ID (Primary Key)
+// 	Break_Name
+// 	Break_Break_Description
+
+// Check-in/Check-out Table:
+
+// 	Checkinout_ID (Primary Key)
+// 	Employee_ID (Foreign Key referencing Employee Table)
+// 	Checkin_Time
+// 	Checkout_Time
+// 	Project_ID (Foreign Key from Project Table)
+// 	Break_Type_ID (Foreign Key from Break Table)

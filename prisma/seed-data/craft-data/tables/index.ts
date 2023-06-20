@@ -1,0 +1,11 @@
+export { insertUserArray } from './user.seed';
+export { insertSettingArray } from './setting.seed';
+export { insertRecordTypeArray } from './record-type.seed';
+export { insertUserSessionArray } from './user-session.seed';
+export { insertUserCodeArray } from './user-code.seed';
+export { insertUserSettingArray } from './user-setting.seed';
+export { insertUserRoleArray } from './user-role.seed';
+export { insertEmployeeArray } from './employee.seed';
+export { insertCompanyArray } from './company.seed';
+export { insertTaskArray } from './task.seed';
+export { insertAttendanceArray } from './attendance.seed';
