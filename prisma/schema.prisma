@@ -186,6 +186,11 @@ model Employee {
 
     task       Task[]
     Attendance Attendance[]
+
+    numLeavesAllowed Int @default(0)
+    numLeavesTaken   Int @default(0)
+
+    leaveRequests LeaveRequest[]
 }
 
 ///{"modulePath": "src/modules/users"}
@@ -210,6 +215,12 @@ model Company {
     isDeleted   Boolean @default(false)
     dateCreated BigInt
     dateUpdated BigInt
+}
+
+model EmployeeRole {
+    employeeRoleId  String @id @db.Char(40)
+    roleName        String
+    roleDescription String
 }
 
 enum TaskStatus {
@@ -250,16 +261,21 @@ model Attendance {
     taskId       String?    @db.Char(40)
 }
 
-// Break Table:
-// 	Break_Type_ID (Primary Key)
-// 	Break_Name
-// 	Break_Break_Description
+model LeaveType {
+    leaveTypeId      String         @id @db.Char(40)
+    leaveName        String
+    leaveDescription String         @db.Text
+    LeaveRequest     LeaveRequest[]
+}
 
-// Check-in/Check-out Table:
-
-// 	Checkinout_ID (Primary Key)
-// 	Employee_ID (Foreign Key referencing Employee Table)
-// 	Checkin_Time
-// 	Checkout_Time
-// 	Project_ID (Foreign Key from Project Table)
-// 	Break_Type_ID (Foreign Key from Break Table)
+model LeaveRequest {
+    leaveRequestId String    @id @db.Char(40)
+    employee       Employee  @relation(fields: [employeeId], references: [employeeId])
+    employeeId     String    @db.Char(40)
+    leaveType      LeaveType @relation(fields: [leaveTypeId], references: [leaveTypeId])
+    leaveTypeId    String    @db.Char(40)
+    startDate      BigInt
+    endDate        BigInt
+    status         String
+    reason         String    @db.Text
+}
